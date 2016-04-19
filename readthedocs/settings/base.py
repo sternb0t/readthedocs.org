@@ -434,6 +434,11 @@ class CommunityBaseSettings(Settings):
                 'level': 'DEBUG',
                 'propagate': False,
             },
+            'doc_builder': {
+                'handlers': ['errorlog'],
+                'level': 'DEBUG',
+                'propagate': False,
+            },
             # Uncomment if you want to see Elasticsearch queries in the console.
             # 'elasticsearch.trace': {
             #     'level': 'DEBUG',
