@@ -17,4 +17,10 @@ class IpreoSettings(CommunityDevSettings):
         },
     }
 
+    DOCKER_ENABLED = True
+    DOCKER_IMAGE = "rtfd-build:base"
+    DOCKER_SOCKET = "/var/run/docker.sock"
+    DOCKER_VERSION = "1.23"
+    DOCKER_LIMITS = {}
+
 IpreoSettings.load_settings(__name__)
