@@ -17,10 +17,13 @@ class IpreoSettings(CommunityDevSettings):
         },
     }
 
-    DOCKER_ENABLED = True
-    DOCKER_IMAGE = "rtfd-build:base"
-    DOCKER_SOCKET = "/var/run/docker.sock"
-    DOCKER_VERSION = "1.23"
-    DOCKER_LIMITS = {}
+    SLUMBER_API_HOST = 'http://http://ipreo-readthedocs.eastus.cloudapp.azure.com'
+    PRODUCTION_DOMAIN = 'ipreo-readthedocs.eastus.cloudapp.azure.com'
+
+    # DOCKER_ENABLED = True
+    # DOCKER_IMAGE = "rtfd-build:base"
+    # DOCKER_SOCKET = "/var/run/docker.sock"
+    # DOCKER_VERSION = "1.23"
+    # DOCKER_LIMITS = {}
 
 IpreoSettings.load_settings(__name__)
