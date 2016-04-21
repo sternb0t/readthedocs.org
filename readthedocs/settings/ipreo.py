@@ -17,7 +17,7 @@ class IpreoSettings(CommunityDevSettings):
     #     },
     # }
 
-    SLUMBER_API_HOST = 'http://http://ipreo-readthedocs.eastus.cloudapp.azure.com'
+    SLUMBER_API_HOST = 'http://ipreo-readthedocs.eastus.cloudapp.azure.com'
     PRODUCTION_DOMAIN = 'ipreo-readthedocs.eastus.cloudapp.azure.com'
     WEBSOCKET_HOST = 'ipreo-readthedocs.eastus.cloudapp.azure.com'
 
