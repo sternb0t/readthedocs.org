@@ -17,9 +17,9 @@ class IpreoSettings(CommunityDevSettings):
     #     },
     # }
 
-    SLUMBER_API_HOST = 'http://ipreo-readthedocs.eastus.cloudapp.azure.com'
-    PRODUCTION_DOMAIN = 'ipreo-readthedocs.eastus.cloudapp.azure.com'
-    WEBSOCKET_HOST = 'ipreo-readthedocs.eastus.cloudapp.azure.com'
+    SLUMBER_API_HOST = 'http://ipreo-readthedocs.eastus.cloudapp.azure.com:8000'
+    PRODUCTION_DOMAIN = 'ipreo-readthedocs.eastus.cloudapp.azure.com:8000'
+    WEBSOCKET_HOST = 'ipreo-readthedocs.eastus.cloudapp.azure.com:8000'
 
     # DOCKER_ENABLED = True
     # DOCKER_IMAGE = "rtfd-build:base"
