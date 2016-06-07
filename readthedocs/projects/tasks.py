@@ -403,7 +403,7 @@ class UpdateDocsTask(Task):
 
     def send_notifications(self, failure, success):
         """Send notifications on build finished"""
-        self._log("sending notifications for failure=%s, success=%s", failure, success)
+        log.info("Sending notifications for version=%s, failure=%s, success=%s", self.version.pk, failure, success)
         send_notifications.delay(self.version.pk, build_pk=self.build['id'], failure=failure, success=success)
 
 
@@ -748,7 +748,7 @@ def email_notification(version, build, email):
     :param build: :py:cls:`Build` instance that failed
     :param email: Email recipient address
     """
-    log.debug(LOG_TEMPLATE.format(project=version.project.slug, version=version.slug,
+    log.info(LOG_TEMPLATE.format(project=version.project.slug, version=version.slug,
                                   msg='sending email to: %s' % email))
     context = {'version': version,
                'project': version.project,
@@ -793,7 +793,7 @@ def webhook_notification(version, build, hook_url):
             'date': build.date.strftime('%Y-%m-%d %H:%M:%S'),
         }
     })
-    log.debug(LOG_TEMPLATE
+    log.info(LOG_TEMPLATE
               .format(project=project.slug, version='',
                       msg='sending notification to: %s' % hook_url))
     requests.post(hook_url, data=data)
