@@ -396,16 +396,26 @@ class EmailHookForm(forms.Form):
 
     """Project email notification form"""
 
+    # notification_type = forms.RadioSelect(choices=[("f", "Failure"), ("s", "Success"), ("a", "All")])
     email = forms.EmailField()
+    send_on_failure = forms.BooleanField(required=False)
+    send_on_success = forms.BooleanField(required=False)
 
     def __init__(self, *args, **kwargs):
         self.project = kwargs.pop('project', None)
+        self.email = None
         super(EmailHookForm, self).__init__(*args, **kwargs)
 
     def clean_email(self):
         self.email = EmailHook.objects.get_or_create(
             email=self.cleaned_data['email'], project=self.project)[0]
         return self.email
+
+    def clean(self):
+        if self.email:
+            self.email.send_on_failure = self.cleaned_data.get("send_on_failure", False)
+            self.email.send_on_success = self.cleaned_data.get("send_on_success", False)
+        return self.cleaned_data
 
     def save(self):
         self.project.emailhook_notifications.add(self.email)
@@ -416,16 +426,26 @@ class WebHookForm(forms.Form):
 
     """Project webhook form"""
 
+    # notification_type = forms.RadioSelect(choices=[("f", "Failure"), ("s", "Success"), ("a", "All")])
     url = forms.URLField()
+    send_on_failure = forms.BooleanField(required=False)
+    send_on_success = forms.BooleanField(required=False)
 
     def __init__(self, *args, **kwargs):
         self.project = kwargs.pop('project', None)
+        self.webhook = None
         super(WebHookForm, self).__init__(*args, **kwargs)
 
     def clean_url(self):
         self.webhook = WebHook.objects.get_or_create(
             url=self.cleaned_data['url'], project=self.project)[0]
         return self.webhook
+
+    def clean(self):
+        if self.webhook:
+            self.webhook.send_on_failure = self.cleaned_data.get("send_on_failure", False)
+            self.webhook.send_on_success = self.cleaned_data.get("send_on_success", False)
+        return self.cleaned_data
 
     def save(self):
         self.project.webhook_notifications.add(self.webhook)

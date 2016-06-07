@@ -51,6 +51,8 @@ class CommunityDevSettings(CommunityBaseSettings):
         'test:8000',
     )
 
+    ALLOW_PRIVATE_REPOS = True
+
 
 CommunityDevSettings.load_settings(__name__)
 

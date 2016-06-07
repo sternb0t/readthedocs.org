@@ -135,7 +135,7 @@ class UpdateDocsTask(Task):
             self.config = load_yaml_config(version=self.version)
 
         if self.setup_env.failed or self.config is None:
-            self.send_notifications()
+            self.send_notifications(self.setup_env.failed, self.setup_env.successful)
             self.setup_env.update_build(state=BUILD_STATE_FINISHED)
             return None
 
@@ -182,8 +182,7 @@ class UpdateDocsTask(Task):
                     epub=outcomes['epub'],
                 )
 
-        if self.build_env.failed:
-            self.send_notifications()
+        self.send_notifications(self.build_env.failed, self.build_env.successful)
 
     @staticmethod
     def get_project(project_pk):
@@ -402,9 +401,9 @@ class UpdateDocsTask(Task):
         builder.move()
         return success
 
-    def send_notifications(self):
-        """Send notifications on build failure"""
-        send_notifications.delay(self.version.pk, build_pk=self.build['id'])
+    def send_notifications(self, failure, success):
+        """Send notifications on build finished"""
+        send_notifications.delay(self.version.pk, build_pk=self.build['id'], failure=failure, success=success)
 
 
 update_docs = celery_app.tasks[UpdateDocsTask.name]
@@ -729,14 +728,16 @@ def _manage_imported_files(version, path, commit):
 
 
 @task(queue='web')
-def send_notifications(version_pk, build_pk):
+def send_notifications(version_pk, build_pk, failure, success):
     version = Version.objects.get(pk=version_pk)
     build = Build.objects.get(pk=build_pk)
 
     for hook in version.project.webhook_notifications.all():
-        webhook_notification(version, build, hook.url)
+        if (failure and hook.send_on_failure) or (success and hook.send_on_success):
+            webhook_notification(version, build, hook.url)
     for email in version.project.emailhook_notifications.all().values_list('email', flat=True):
-        email_notification(version, build, email)
+        if (failure and email.send_on_failure) or (success and email.send_on_success):
+            email_notification(version, build, email)
 
 
 def email_notification(version, build, email):

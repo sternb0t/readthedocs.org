@@ -13,7 +13,7 @@
 
 {% block project_edit_content %}
   <p class="help_text">
-    {% trans "Configure Notifications to be sent on build failures." %}
+    {% trans "Configure Notifications to be sent when builds finish." %}
   </p>
 
   {% if emails or urls %}
@@ -25,6 +25,14 @@
         {% for email in emails %}
             <li>
             {{ email }}
+            <ul style="margin-left: 10px;">
+                <li>
+                Send on failure: <strong>{{ email.send_on_failure }}</strong>
+                </li>
+                <li>
+                Send on success: <strong>{{ email.send_on_success }}</strong>
+                </li>
+            </ul>
             </li>
         {% endfor %}
       </ul>
@@ -36,6 +44,14 @@
         {% for url in urls %}
             <li>
             {{ url }}
+            <ul style="margin-left: 10px;">
+                <li>
+                Send on failure: <strong>{{ url.send_on_failure }}</strong>
+                </li>
+                <li>
+                Send on success: <strong>{{ url.send_on_success }}</strong>
+                </li>
+            </ul>
             </li>
         {% endfor %}
       </ul>

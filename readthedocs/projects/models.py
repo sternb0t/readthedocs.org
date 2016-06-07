@@ -863,6 +863,8 @@ class Notification(models.Model):
 
 class EmailHook(Notification):
     email = models.EmailField()
+    send_on_failure = models.BooleanField(default=True)
+    send_on_success = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.email
@@ -871,6 +873,8 @@ class EmailHook(Notification):
 class WebHook(Notification):
     url = models.URLField(blank=True,
                           help_text=_('URL to send the webhook to'))
+    send_on_failure = models.BooleanField(default=True)
+    send_on_success = models.BooleanField(default=False)
 
     def __unicode__(self):
         return self.url
