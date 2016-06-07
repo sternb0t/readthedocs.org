@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from django.http import Http404
+from django.http import Http404, HttpResponseBadRequest
 
 from readthedocs.projects.models import Project, Domain
 
@@ -15,12 +15,12 @@ LOG_TEMPLATE = u"(Middleware) {msg} [{host}{path}]"
 SUBDOMAIN_URLCONF = getattr(
     settings,
     'SUBDOMAIN_URLCONF',
-    'readthedocs.core.subdomain_urls'
+    'readthedocs.core.urls.subdomain'
 )
 SINGLE_VERSION_URLCONF = getattr(
     settings,
     'SINGLE_VERSION_URLCONF',
-    'readthedocs.core.single_version_urls'
+    'readthedocs.core.urls.single_version'
 )
 
 
@@ -30,12 +30,15 @@ class SubdomainMiddleware(object):
         if not getattr(settings, 'USE_SUBDOMAIN', False):
             return None
 
-        host = request.get_host().lower()
+        full_host = host = request.get_host().lower()
         path = request.get_full_path()
         log_kwargs = dict(host=host, path=path)
         public_domain = getattr(settings, 'PUBLIC_DOMAIN', None)
-        production_domain = getattr(settings, 'PRODUCTION_DOMAIN',
-                                    'readthedocs.org')
+        production_domain = getattr(
+            settings,
+            'PRODUCTION_DOMAIN',
+            'readthedocs.org'
+        )
 
         if public_domain is None:
             public_domain = production_domain
@@ -47,12 +50,15 @@ class SubdomainMiddleware(object):
         if len(domain_parts) == len(public_domain.split('.')) + 1:
             subdomain = domain_parts[0]
             is_www = subdomain.lower() == 'www'
-            is_ssl = subdomain.lower() == 'ssl'
-            if not is_www and not is_ssl and public_domain in host:
+            if not is_www and (
+                # Support ports during local dev
+                public_domain in host or public_domain in full_host
+            ):
                 request.subdomain = True
                 request.slug = subdomain
                 request.urlconf = SUBDOMAIN_URLCONF
                 return None
+
         # Serve CNAMEs
         if (public_domain not in host and
                 production_domain not in host and
@@ -76,7 +82,7 @@ class SubdomainMiddleware(object):
                 request.urlconf = SUBDOMAIN_URLCONF
                 request.rtdheader = True
                 log.debug(LOG_TEMPLATE.format(
-                    msg='X-RTD-Slug header detetected: %s' % request.slug,
+                    msg='X-RTD-Slug header detected: %s' % request.slug,
                     **log_kwargs))
             # Try header first, then DNS
             elif not hasattr(request, 'domain_object'):
@@ -95,7 +101,7 @@ class SubdomainMiddleware(object):
                     request.slug = slug
                     request.urlconf = SUBDOMAIN_URLCONF
                     log.debug(LOG_TEMPLATE.format(
-                        msg='CNAME detetected: %s' % request.slug,
+                        msg='CNAME detected: %s' % request.slug,
                         **log_kwargs))
                 except:
                     # Some crazy person is CNAMEing to us. 404.
@@ -103,11 +109,11 @@ class SubdomainMiddleware(object):
                     raise Http404(_('Invalid hostname'))
         # Google was finding crazy www.blah.readthedocs.org domains.
         # Block these explicitly after trying CNAME logic.
-        if len(domain_parts) > 3:
+        if len(domain_parts) > 3 and not settings.DEBUG:
             # Stop www.fooo.readthedocs.org
             if domain_parts[0] == 'www':
                 log.debug(LOG_TEMPLATE.format(msg='404ing long domain', **log_kwargs))
-                raise Http404(_('Invalid hostname'))
+                return HttpResponseBadRequest(_('Invalid hostname'))
             log.debug(LOG_TEMPLATE.format(msg='Allowing long domain name', **log_kwargs))
             # raise Http404(_('Invalid hostname'))
         # Normal request.
@@ -172,6 +178,7 @@ class ProxyMiddleware(object):
 
     """
     Middleware that sets REMOTE_ADDR based on HTTP_X_FORWARDED_FOR, if the
+
     latter is set. This is useful if you're sitting behind a reverse proxy that
     causes each request's REMOTE_ADDR to be set to 127.0.0.1.
     Note that this does NOT validate HTTP_X_FORWARDED_FOR. If you're not behind
@@ -202,16 +209,20 @@ class FooterNoSessionMiddleware(SessionMiddleware):
     This will reduce the size of our session table drastically.
     """
 
+    IGNORE_URLS = ['/api/v2/footer_html', '/sustainability/view', '/sustainability/click']
+
     def process_request(self, request):
-        if ('api/v2/footer_html' in request.path_info and
-                settings.SESSION_COOKIE_NAME not in request.COOKIES):
-            # Hack request.session otherwise the Authentication middleware complains.
-            request.session = {}
-            return
+        for url in self.IGNORE_URLS:
+            if (request.path_info.startswith(url) and
+                    settings.SESSION_COOKIE_NAME not in request.COOKIES):
+                # Hack request.session otherwise the Authentication middleware complains.
+                request.session = {}
+                return
         super(FooterNoSessionMiddleware, self).process_request(request)
 
     def process_response(self, request, response):
-        if ('api/v2/footer_html' in request.path_info and
-                settings.SESSION_COOKIE_NAME not in request.COOKIES):
-            return response
+        for url in self.IGNORE_URLS:
+            if (request.path_info.startswith(url) and
+                    settings.SESSION_COOKIE_NAME not in request.COOKIES):
+                return response
         return super(FooterNoSessionMiddleware, self).process_response(request, response)

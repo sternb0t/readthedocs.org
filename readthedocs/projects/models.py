@@ -118,8 +118,8 @@ class Project(models.Model):
     default_version = models.CharField(
         _('Default version'), max_length=255, default=LATEST,
         help_text=_('The version of your project that / redirects to'))
-    # In default_branch, None max_lengtheans the backend should choose the
-    # appropraite branch. Eg 'master' for git
+    # In default_branch, None means the backend should choose the
+    # appropriate branch. Eg 'master' for git
     default_branch = models.CharField(
         _('Default branch'), max_length=255, default=None, null=True,
         blank=True, help_text=_('What branch "latest" points to. Leave empty '
@@ -240,7 +240,7 @@ class Project(models.Model):
         default='words',
         help_text=_("The primary programming language the project is written in."),
         choices=constants.PROGRAMMING_LANGUAGES, blank=True)
-    # A subproject pointed at it's main language, so it can be tracked
+    # A subproject pointed at its main language, so it can be tracked
     main_language_project = models.ForeignKey('self',
                                               related_name='translations',
                                               blank=True, null=True)
@@ -845,10 +845,8 @@ class ImportedFile(models.Model):
     md5 = models.CharField(_('MD5 checksum'), max_length=255)
     commit = models.CharField(_('Commit'), max_length=255)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('docs_detail', [self.project.slug, self.project.language,
-                                self.version.slug, self.path])
+        return resolve(project=self.project, version_slug=self.version.slug, filename=self.path)
 
     def __unicode__(self):
         return '%s: %s' % (self.name, self.project)
