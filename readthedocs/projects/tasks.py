@@ -403,6 +403,7 @@ class UpdateDocsTask(Task):
 
     def send_notifications(self, failure, success):
         """Send notifications on build finished"""
+        self._log("sending notifications for failure=%s, success=%s", failure, success)
         send_notifications.delay(self.version.pk, build_pk=self.build['id'], failure=failure, success=success)
 
 
