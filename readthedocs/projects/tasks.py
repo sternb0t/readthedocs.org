@@ -803,7 +803,7 @@ def webhook_notification(version, build, hook_url):
     log.info(LOG_TEMPLATE
               .format(project=project.slug, version='',
                       msg='sending notification to: %s with payload %s' % (hook_url, data)))
-    resp = requests.post(hook_url, data=data)
+    resp = requests.post(hook_url, data=data, headers={"content-type": "application/json"})
     log.info(LOG_TEMPLATE
              .format(project=project.slug, version='',
                      msg='notification response: status %s with text %s' % (resp.status_code, resp.text)))
