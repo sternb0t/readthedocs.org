@@ -35,6 +35,10 @@ class IpreoSettings(CommunityDevSettings):
             'level': 'DEBUG',
             'propagate': False,
         }
+        logging[""] = {
+            'handlers': ['console', 'errorlog'],
+            'level': 'DEBUG',
+        }
         return logging
 
 
