@@ -795,10 +795,10 @@ def webhook_notification(version, build, hook_url):
             'id': build.id,
             'success': build.success,
             'date': build.date.strftime('%Y-%m-%d %H:%M:%S'),
+        },
         'text': "Docs build {} for {} completed at {}. Check out {}".format(build.id, project.name,
-                                                                     build.date.strftime('%Y-%m-%d %H:%M:%S'),
-                                                                     version.get_absolute_url())
-        }
+                                                                            build.date.strftime('%Y-%m-%d %H:%M:%S'),
+                                                                            version.get_absolute_url())
     })
     log.info(LOG_TEMPLATE
               .format(project=project.slug, version='',
