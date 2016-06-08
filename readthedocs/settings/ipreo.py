@@ -27,4 +27,15 @@ class IpreoSettings(CommunityDevSettings):
     # DOCKER_VERSION = "1.23"
     # DOCKER_LIMITS = {}
 
+    @property
+    def LOGGING(self):
+        logging = super(CommunityDevSettings, self).LOGGING
+        logging["readthedocs.projects.tasks"] = {
+            'handlers': ['console', 'errorlog'],
+            'level': 'DEBUG',
+            'propagate': False,
+        }
+        return logging
+
+
 IpreoSettings.load_settings(__name__)
