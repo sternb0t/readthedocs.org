@@ -734,11 +734,15 @@ def send_notifications(version_pk, build_pk, failure, success):
     build = Build.objects.get(pk=build_pk)
 
     for hook in version.project.webhook_notifications.all():
+        log.info("hook %s: send_on_failure=%s, send_on_success=%s", hook.url, hook.send_on_failure,
+                 hook.send_on_success)
         if (failure and hook.send_on_failure) or (success and hook.send_on_success):
             webhook_notification(version, build, hook.url)
-    for email in version.project.emailhook_notifications.all().values_list('email', flat=True):
+    for email in version.project.emailhook_notifications.all():
+        log.info("email %s: send_on_failure=%s, send_on_success=%s", email.email, email.send_on_failure,
+                 email.send_on_success)
         if (failure and email.send_on_failure) or (success and email.send_on_success):
-            email_notification(version, build, email)
+            email_notification(version, build, email.email)
 
 
 def email_notification(version, build, email):
