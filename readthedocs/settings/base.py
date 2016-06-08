@@ -318,139 +318,141 @@ class CommunityBaseSettings(Settings):
 
     # Logging
     LOG_FORMAT = "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s"
-
-    @property
-    def LOGGING(self):
-        return {
-            'version': 1,
-            'disable_existing_loggers': True,
-            'formatters': {
-                'standard': {
-                    'format': self.LOG_FORMAT,
-                    'datefmt': "%d/%b/%Y %H:%M:%S"
-                },
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': True,
+        'formatters': {
+            'standard': {
+                'format': LOG_FORMAT,
+                'datefmt': "%d/%b/%Y %H:%M:%S"
             },
-            'filters': {
-                'require_debug_false': {
-                    '()': 'django.utils.log.RequireDebugFalse'
-                }
+        },
+        'filters': {
+            'require_debug_false': {
+                '()': 'django.utils.log.RequireDebugFalse'
+            }
+        },
+        'handlers': {
+            'null': {
+                'level': 'DEBUG',
+                'class': 'django.utils.log.NullHandler',
             },
-            'handlers': {
-                'null': {
-                    'level': 'DEBUG',
-                    'class': 'django.utils.log.NullHandler',
-                },
-                'exceptionlog': {
-                    'level': 'DEBUG',
-                    'class': 'logging.handlers.RotatingFileHandler',
-                    'filename': os.path.join(self.LOGS_ROOT, "exceptions.log"),
-                    'formatter': 'standard',
-                },
-                'errorlog': {
-                    'level': 'INFO',
-                    'class': 'logging.handlers.RotatingFileHandler',
-                    'filename': os.path.join(self.LOGS_ROOT, "rtd.log"),
-                    'formatter': 'standard',
-                },
-                'postcommit': {
-                    'level': 'DEBUG',
-                    'class': 'logging.handlers.RotatingFileHandler',
-                    'filename': os.path.join(self.LOGS_ROOT, "postcommit.log"),
-                    'formatter': 'standard',
-                },
-                'middleware': {
-                    'level': 'DEBUG',
-                    'class': 'logging.handlers.RotatingFileHandler',
-                    'filename': os.path.join(self.LOGS_ROOT, "middleware.log"),
-                    'formatter': 'standard',
-                },
-                'restapi': {
-                    'level': 'DEBUG',
-                    'class': 'logging.handlers.RotatingFileHandler',
-                    'filename': os.path.join(self.LOGS_ROOT, "api.log"),
-                    'formatter': 'standard',
-                },
-                'db': {
-                    'level': 'INFO',
-                    'class': 'logging.handlers.RotatingFileHandler',
-                    'filename': os.path.join(self.LOGS_ROOT, "db.log"),
-                    'formatter': 'standard',
-                },
-                'search': {
-                    'level': 'INFO',
-                    'class': 'logging.handlers.RotatingFileHandler',
-                    'filename': os.path.join(self.LOGS_ROOT, "search.log"),
-                    'formatter': 'standard',
-                },
-                'mail_admins': {
-                    'level': 'ERROR',
-                    'filters': ['require_debug_false'],
-                    'class': 'django.utils.log.AdminEmailHandler',
-                },
-                'console': {
-                    'level': ('INFO', 'DEBUG')[self.DEBUG],
-                    'class': 'logging.StreamHandler',
-                    'formatter': 'standard'
-                },
+            'exceptionlog': {
+                'level': 'DEBUG',
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': os.path.join(LOGS_ROOT, "exceptions.log"),
+                'formatter': 'standard',
             },
-            'loggers': {
-                'django': {
-                    'handlers': ['console', 'errorlog'],
-                    'propagate': True,
-                    'level': 'WARN',
-                },
-                'django.db.backends': {
-                    'handlers': ['db'],
-                    'level': 'DEBUG',
-                    'propagate': False,
-                },
-                'readthedocs.core.views.post_commit': {
-                    'handlers': ['postcommit'],
-                    'level': 'DEBUG',
-                    'propagate': False,
-                },
-                'core.middleware': {
-                    'handlers': ['middleware'],
-                    'level': 'DEBUG',
-                    'propagate': False,
-                },
-                'restapi': {
-                    'handlers': ['restapi'],
-                    'level': 'DEBUG',
-                    'propagate': False,
-                },
-                'django.request': {
-                    'handlers': ['exceptionlog'],
-                    'level': 'ERROR',
-                    'propagate': False,
-                },
-                'readthedocs.projects.views.public.search': {
-                    'handlers': ['search'],
-                    'level': 'DEBUG',
-                    'propagate': False,
-                },
-                'search': {
-                    'handlers': ['search'],
-                    'level': 'DEBUG',
-                    'propagate': False,
-                },
-                'doc_builder': {
-                    'handlers': ['errorlog'],
-                    'level': 'DEBUG',
-                    'propagate': False,
-                },
-                # Uncomment if you want to see Elasticsearch queries in the console.
-                # 'elasticsearch.trace': {
-                #     'level': 'DEBUG',
-                #     'handlers': ['console'],
-                # },
+            'errorlog': {
+                'level': 'INFO',
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': os.path.join(LOGS_ROOT, "rtd.log"),
+                'formatter': 'standard',
+            },
+            'postcommit': {
+                'level': 'DEBUG',
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': os.path.join(LOGS_ROOT, "postcommit.log"),
+                'formatter': 'standard',
+            },
+            'middleware': {
+                'level': 'DEBUG',
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': os.path.join(LOGS_ROOT, "middleware.log"),
+                'formatter': 'standard',
+            },
+            'restapi': {
+                'level': 'DEBUG',
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': os.path.join(LOGS_ROOT, "api.log"),
+                'formatter': 'standard',
+            },
+            'db': {
+                'level': 'INFO',
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': os.path.join(LOGS_ROOT, "db.log"),
+                'formatter': 'standard',
+            },
+            'search': {
+                'level': 'INFO',
+                'class': 'logging.handlers.RotatingFileHandler',
+                'filename': os.path.join(LOGS_ROOT, "search.log"),
+                'formatter': 'standard',
+            },
+            'mail_admins': {
+                'level': 'ERROR',
+                'filters': ['require_debug_false'],
+                'class': 'django.utils.log.AdminEmailHandler',
+            },
+            'console': {
+                'level': ('INFO', 'DEBUG')[DEBUG],
+                'class': 'logging.StreamHandler',
+                'formatter': 'standard'
+            },
+        },
+        'loggers': {
+            'django': {
+                'handlers': ['console', 'errorlog'],
+                'propagate': True,
+                'level': 'WARN',
+            },
+            'django.db.backends': {
+                'handlers': ['db'],
+                'level': 'DEBUG',
+                'propagate': False,
+            },
+            'readthedocs.core.views.post_commit': {
+                'handlers': ['postcommit'],
+                'level': 'DEBUG',
+                'propagate': False,
+            },
+            'core.middleware': {
+                'handlers': ['middleware'],
+                'level': 'DEBUG',
+                'propagate': False,
+            },
+            'restapi': {
+                'handlers': ['restapi'],
+                'level': 'DEBUG',
+                'propagate': False,
+            },
+            'django.request': {
+                'handlers': ['exceptionlog'],
+                'level': 'ERROR',
+                'propagate': False,
+            },
+            'readthedocs.projects.views.public.search': {
+                'handlers': ['search'],
+                'level': 'DEBUG',
+                'propagate': False,
+            },
+            'readthedocs.projects.tasks' : {
+                'handlers': ['console', 'errorlog'],
+                'level': 'DEBUG',
+                'propagate': False,
+            },
+            'search': {
+                'handlers': ['search'],
+                'level': 'DEBUG',
+                'propagate': False,
+            },
+            'doc_builder': {
+                'handlers': ['errorlog'],
+                'level': 'DEBUG',
+                'propagate': False,
+            },
+            # Uncomment if you want to see Elasticsearch queries in the console.
+            # 'elasticsearch.trace': {
+            #     'level': 'DEBUG',
+            #     'handlers': ['console'],
+            # },
 
                 # Default handler for everything that we're doing. Hopefully this
                 # doesn't double-print the Django things as well. Not 100% sure how
                 # logging works :)
                 '': {
                     'handlers': ['console', 'errorlog'],
-                    'level': 'INFO',
+                    'level': 'DEBUG',
                 },
             }
         }

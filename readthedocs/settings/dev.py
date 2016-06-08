@@ -53,20 +53,6 @@ class CommunityDevSettings(CommunityBaseSettings):
 
     ALLOW_PRIVATE_REPOS = True
 
-    @property
-    def LOGGING(self):
-        logging = super(CommunityDevSettings, self).LOGGING
-        logging["readthedocs.projects.tasks"] = {
-                    'handlers': ['console', 'errorlog'],
-                    'level': 'DEBUG',
-                    'propagate': False,
-                }
-        logging[""] = {
-                    'handlers': ['console', 'errorlog'],
-                    'level': 'DEBUG',
-                }
-        return logging
-
 
 CommunityDevSettings.load_settings(__name__)
 
