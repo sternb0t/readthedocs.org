@@ -52,6 +52,7 @@ class CommunityDevSettings(CommunityBaseSettings):
     )
 
     ALLOW_PRIVATE_REPOS = True
+    DEFAULT_VERSION_PRIVACY_LEVEL = 'private'
 
 
 CommunityDevSettings.load_settings(__name__)
