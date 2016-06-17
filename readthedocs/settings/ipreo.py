@@ -6,6 +6,7 @@ from .dev import CommunityDevSettings
 class IpreoSettings(CommunityDevSettings):
 
     ALLOW_PRIVATE_REPOS = True
+    DEFAULT_PRIVACY_LEVEL = 'private'
     DEFAULT_VERSION_PRIVACY_LEVEL = 'private'
     # DEBUG = False
     # TEMPLATE_DEBUG = False
